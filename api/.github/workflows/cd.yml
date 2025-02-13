@@ -1,0 +1,26 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Deploy to Server
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@YOUR_SERVER_IP << 'EOF'
+          cd /home/ubuntu/fastapi-book-project
+          git pull origin main
+          source env/bin/activate
+          pip install -r requirements.txt
+          sudo systemctl restart fastapi
+          sudo systemctl restart nginx
+        EOF
+
